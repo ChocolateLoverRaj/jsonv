@@ -4,6 +4,7 @@
     "target": "ES2019",
     "module": "UMD",
     "declaration": true,
-    "moduleResolution": "Node"
+    "moduleResolution": "Node",
+    "esModuleInterop": true
   }
 }

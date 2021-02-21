@@ -1,3 +1,5 @@
+import fromEntries from 'object.fromentries'
+
 export interface JsonObject {
   [key: string]: Json
 }
@@ -37,7 +39,7 @@ export const parse = (jsonv: Jsonv, vars: JsonObject = {}): Json => {
           throw new Error('Local vars must be an object or undefined')
         }
         const accessibleVars = { ...vars, ...localVars }
-        const parsedObj = Object.fromEntries(Object.entries(jsonv)
+        const parsedObj = fromEntries(Object.entries(jsonv)
           .filter(([key]) => key !== '$jsonv')
           .map(([key, jsonv]) => [key, parse(jsonv, accessibleVars)])
         )
