@@ -3,6 +3,7 @@
     "strictNullChecks": true,
     "target": "ES2019",
     "module": "UMD",
-    "declaration": true
+    "declaration": true,
+    "moduleResolution": "Node"
   }
 }
