@@ -1,7 +1,8 @@
 [![Test](https://github.com/ChocolateLoverRaj/jsonv/actions/workflows/test.yml/badge.svg)](https://github.com/ChocolateLoverRaj/jsonv/actions/workflows/test.yml)
 [![License](https://badgen.net/github/license/standard/ts-standard)](https://github.com/standard/ts-standard/blob/master/LICENSE)
-[![TS-Standard - Typescript Standard Style Guide](https://badgen.net/badge/code%20style/ts-standard/blue?icon=typescript)](https://github.com/standard/ts-standard)
 [![TypeScript](https://badgen.net/badge/icon/typescript?icon=typescript&label)](https://www.typescriptlang.org/)
+[![TS-Standard - Typescript Standard Style Guide](https://badgen.net/badge/code%20style/ts-standard/blue?icon=typescript)](https://github.com/standard/ts-standard)
+[![Lint](https://github.com/ChocolateLoverRaj/jsonv/actions/workflows/lint.yml/badge.svg)](https://github.com/ChocolateLoverRaj/jsonv/actions/workflows/lint.yml)
 
 # jsonv
 Json with variables.
