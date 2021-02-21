@@ -1,4 +1,4 @@
-name: Link
+name: Lint
 on:
   push: 
     branches: [main]
@@ -16,8 +16,8 @@ jobs:
         with:
           node-version: 14
         
-      - name: Install Necessary Dependencies
-        run: npm i -g eslint ts-standard
+      - name: Install Dependencies
+        run: npm i
 
-      - name: Run Link
-        run: eslint .
+      - name: Run Lint
+        run: run run lint
