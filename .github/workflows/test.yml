@@ -1,0 +1,29 @@
+name: Test
+on:
+  push: 
+    branches: [main]
+  pull_request:
+    branches: [main]
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        nodeVersion: [10, 12, 14, 15]
+    steps:
+      - name: Setup Repo
+        uses: actions/checkout@v2
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: ${{matrix.nodeVersion}}
+        
+      - name: Install Dependencies
+        run: npm i
+
+      - name: Build
+        run: npm run build
+
+      - name: Run Tests
+        run: npm test
