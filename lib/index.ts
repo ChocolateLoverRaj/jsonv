@@ -29,20 +29,16 @@ const jsonv = (vars: Vars = {}): Visitor => {
     Object: {
       enter: path => {
         if (path.node.type === 'Object') {
-          // if (last(objectTypes) !== ObjectTypes.DECLARATION) {
           objectTypes.push(ObjectTypes.NONE)
-          // }
           multipleKeys = path.node.entries.length > 1
         }
       },
       exit: path => {
         switch (last(objectTypes)) {
           case ObjectTypes.DECLARATION:
-            /* path.remove() */
             break
           case ObjectTypes.REFERENCE:
             path.replace(getVar(((path.node as ObjectNode).entries[0].value as StringNode).value))
-            console.log('replaced node', path.node)
             objectTypes.pop()
             break
           default:
@@ -67,10 +63,8 @@ const jsonv = (vars: Vars = {}): Visitor => {
         }
       },
       exit: path => {
-        console.log(objectTypes)
         switch (last(objectTypes)) {
           case ObjectTypes.DECLARATION:
-            // console.log((path.node as ObjectEntryNode).value)
             scopes.push(fromEntries(((path.node as ObjectEntryNode).value as ObjectNode).entries.map(({ key, value }) => [key, value])))
             objectTypes.pop()
             path.remove()
