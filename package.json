@@ -26,7 +26,7 @@
     "build:es": "tsc --project tsconfig/es",
     "build": "npm run build:umd && npm run build:es",
     "build:dev": "tsc",
-    "test": "mocha",
+    "test": "mocha dist/test",
     "prepack": "npm run build"
   },
   "dependencies": {
