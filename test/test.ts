@@ -1,6 +1,13 @@
 /* eslint-env mocha */
-import { parse } from '../lib/index'
+import jsonv from '../lib/index'
 import { strictEqual, deepStrictEqual } from 'assert'
+import { transform, parser } from '@programmerraj/json-transformer'
+import { Json } from '@programmerraj/json-transformer/dist/umd/json'
+import fromEntries from 'object.fromentries'
+
+const parse = (json: Json, vars: Json = {}): Json => transform(json, [
+  jsonv(fromEntries(Object.entries(vars as object).map(([key, value]) => [key, parser(value)])))
+])
 
 describe('no vars', () => {
   it('boolean', () => {

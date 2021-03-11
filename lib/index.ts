@@ -1,52 +1,78 @@
+import { Visitor } from '@programmerraj/json-transformer/dist/umd/visitor'
+import last from 'last-element'
+import { Node, ObjectEntryNode, ObjectNode, StringNode } from '@programmerraj/json-transformer/dist/umd/node'
 import fromEntries from 'object.fromentries'
 
-export interface JsonObject {
-  [key: string]: Json
+enum ObjectTypes {
+  DECLARATION,
+  REFERENCE,
+  NONE
 }
 
-export type Json = boolean | number | null | JsonObject | Json[] | string
-
-export interface JsonvObject {
-  [key: string]: Jsonv
+interface Vars {
+  [key: string]: Node
 }
 
-export interface JsonvObjectWithVars extends JsonvObject {
-  $jsonv: JsonObject | string
-}
+const jsonv = (vars: Vars = {}): Visitor => {
+  const scopes: Vars[] = [vars]
+  const objectTypes: ObjectTypes[] = []
+  let multipleKeys = false
 
-export type Jsonv = boolean | number | null | JsonvObject | JsonvObjectWithVars | Jsonv[] | string
+  const getVar = (name: string): Node => {
+    for (const vars of scopes.reverse()) {
+      if (vars[name] !== undefined) return vars[name]
+    }
+    throw new Error(`No variable with name: ${name}`)
+  }
 
-export const parse = (jsonv: Jsonv, vars: JsonObject = {}): Json => {
-  if (typeof jsonv === 'object') {
-    if (jsonv === null) {
-      return jsonv
-    } else if (jsonv instanceof Array) {
-      return jsonv.map(jsonv => parse(jsonv, vars))
-    } else {
-      const localVars = jsonv.$jsonv
-      if (typeof localVars === 'string') {
-        // Here localVars is not actually vars, it is a reference to a variable
-        const value = vars[localVars]
-        if (value === undefined) throw new Error('No value for var')
-        return value
-      } else {
-        if (
-          localVars !== undefined && (
-            typeof localVars !== 'object' ||
-          localVars instanceof Array
-          )
-        ) {
-          throw new Error('Local vars must be an object or undefined')
+  return {
+    Object: {
+      enter: path => {
+        if (path.node.type === 'Object') {
+          objectTypes.push(ObjectTypes.NONE)
+          multipleKeys = path.node.entries.length > 1
         }
-        const accessibleVars = { ...vars, ...localVars }
-        const parsedObj = fromEntries(Object.entries(jsonv)
-          .filter(([key]) => key !== '$jsonv')
-          .map(([key, jsonv]) => [key, parse(jsonv, accessibleVars)])
-        )
-        return parsedObj
+      },
+      exit: path => {
+        switch (last(objectTypes)) {
+          case ObjectTypes.DECLARATION:
+            break
+          case ObjectTypes.REFERENCE:
+            path.replace(getVar(((path.node as ObjectNode).entries[0].value as StringNode).value))
+            objectTypes.pop()
+            break
+          default:
+            objectTypes.pop()
+        }
+      }
+    },
+    ObjectEntry: {
+      enter: path => {
+        if (path.node.type === 'ObjectEntry' && path.node.key === '$jsonv') {
+          switch (path.node.value.type) {
+            case 'Object':
+              objectTypes[objectTypes.length - 1] = ObjectTypes.DECLARATION
+              break
+            case 'String':
+              if (multipleKeys) throw new Error('When $jsonv is used as a string, no other properties are allowed')
+              objectTypes[objectTypes.length - 1] = ObjectTypes.REFERENCE
+              break
+            default:
+              throw new Error('Unrecognized $jsonv value')
+          }
+        }
+      },
+      exit: path => {
+        switch (last(objectTypes)) {
+          case ObjectTypes.DECLARATION:
+            scopes.push(fromEntries(((path.node as ObjectEntryNode).value as ObjectNode).entries.map(({ key, value }) => [key, value])))
+            objectTypes.pop()
+            path.remove()
+            break
+        }
       }
     }
-  } else {
-    return jsonv
   }
 }
+
+export default jsonv

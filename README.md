@@ -1,14 +1,9 @@
 [![Test](https://github.com/ChocolateLoverRaj/jsonv/actions/workflows/test.yml/badge.svg)](https://github.com/ChocolateLoverRaj/jsonv/actions/workflows/test.yml)
 [![License](https://badgen.net/github/license/standard/ts-standard)](https://github.com/standard/ts-standard/blob/master/LICENSE)
-[![TypeScript](https://badgen.net/badge/icon/typescript?icon=typescript&label)](https://www.typescriptlang.org/)
 [![TS-Standard - Typescript Standard Style Guide](https://badgen.net/badge/code%20style/ts-standard/blue?icon=typescript)](https://github.com/standard/ts-standard)
-[![Lint](https://github.com/ChocolateLoverRaj/jsonv/actions/workflows/lint.yml/badge.svg)](https://github.com/ChocolateLoverRaj/jsonv/actions/workflows/lint.yml)
 
 # jsonv
 Json with variables.
-
-## Standard with TypeScript
-[![JavaScript Style Guide](https://cdn.rawgit.com/standard/standard/master/badge.svg)](https://github.com/standard/eslint-config-standard-with-typescript)
 
 ## Why
 When editing json, it can be very annoying to change a certain value that's used in multiple places.
@@ -115,32 +110,37 @@ This will compile into
 
 
 ## Install
+`@programmerraj/transform-json` is a `peerDependency`.
 ```bash
-npm i ChocolateLoverRaj/jsonv
+npm i @programmerraj/transform-json @programmerraj/jsonv
 ```
 
 ## Usage
+[More information about `transform-json`](https://github.com/ChocolateLoverRaj/json-transformer#usage)
 
-### TypeScript
+### ES
 ```js
-import { parse } from 'jsonv'
+import jsonv from 'jsonv'
 ```
 
 ### CommonJS
 ```js
-const { parse } = require('jsonv')
+const jsonv = require('jsonv').default
 ```
 
-### Parse
+### Transforming Json
 ```js
-parse({
+transform({
   $jsonv: {
     a: 'hi'
   },
   a: { $jsonv: 'a' },
   b: { $jsonv: 'b' }
-}, {
+}, [jsonv(parser({
   b: 'Given Var'
-})
+}))])
 // Returns { a: 'hi', b: 'Given Var' }
 ```
+
+## Contributing
+[![JavaScript Style Guide](https://cdn.rawgit.com/standard/standard/master/badge.svg)](https://github.com/standard/eslint-config-standard-with-typescript)
