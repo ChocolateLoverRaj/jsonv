@@ -1,10 +1,14 @@
 {
   "compilerOptions": {
+    "module": "UMD",
+    "outDir": "./dist",
+    "moduleResolution": "Node",
+    "lib": [
+      "ES2020"
+    ],
+    "esModuleInterop": true,
     "strictNullChecks": true,
     "target": "ES2019",
-    "module": "UMD",
-    "declaration": true,
-    "moduleResolution": "Node",
-    "esModuleInterop": true
+    "declaration": true
   }
 }
