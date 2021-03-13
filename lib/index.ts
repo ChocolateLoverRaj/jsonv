@@ -1,12 +1,12 @@
 import { Visitor } from '@programmerraj/json-transformer/dist/umd/visitor'
 import last from 'last-element'
 import { Node, ObjectEntryNode, ObjectNode, StringNode } from '@programmerraj/json-transformer/dist/umd/node'
-import fromEntries from 'object.fromentries'
 
 enum ObjectTypes {
   DECLARATION,
   REFERENCE,
-  NONE
+  NONE,
+  VARS
 }
 
 interface Vars {
@@ -29,21 +29,23 @@ const jsonv = (vars: Vars = {}): Visitor => {
     Object: {
       enter: path => {
         if (path.node.type === 'Object') {
-          objectTypes.push(ObjectTypes.NONE)
+          if (last(objectTypes) === ObjectTypes.DECLARATION) {
+            scopes.push({})
+          }
+          objectTypes.push(last(objectTypes) === ObjectTypes.DECLARATION
+            ? ObjectTypes.VARS
+            : ObjectTypes.NONE
+          )
           multipleKeys = path.node.entries.length > 1
         }
       },
       exit: path => {
         switch (last(objectTypes)) {
-          case ObjectTypes.DECLARATION:
-            break
           case ObjectTypes.REFERENCE:
             path.replace(getVar(((path.node as ObjectNode).entries[0].value as StringNode).value))
-            objectTypes.pop()
             break
-          default:
-            objectTypes.pop()
         }
+        objectTypes.pop()
       }
     },
     ObjectEntry: {
@@ -63,10 +65,15 @@ const jsonv = (vars: Vars = {}): Visitor => {
         }
       },
       exit: path => {
+        const { key, value } = path.node as ObjectEntryNode
         switch (last(objectTypes)) {
+          case ObjectTypes.VARS:
+            last(scopes)[key] = value
+            // console.log('Var', path.node)
+            break
           case ObjectTypes.DECLARATION:
-            scopes.push(fromEntries(((path.node as ObjectEntryNode).value as ObjectNode).entries.map(({ key, value }) => [key, value])))
-            objectTypes.pop()
+            // console.log(path.node)
+            objectTypes[objectTypes.length - 1] = ObjectTypes.NONE
             path.remove()
             break
         }
