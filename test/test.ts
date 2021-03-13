@@ -82,4 +82,23 @@ describe('vars', () => {
       }
     )
   })
+
+  it('Object var', () => {
+    deepStrictEqual(
+      parse({
+        $jsonv: {
+          a: { obj: true }
+        },
+        a: { $jsonv: 'a' },
+        b: [
+          { $jsonv: 'a' },
+          { $jsonv: 'a' }
+        ]
+      }),
+      {
+        a: { obj: true },
+        b: [{ obj: true }, { obj: true }]
+      }
+    )
+  })
 })
